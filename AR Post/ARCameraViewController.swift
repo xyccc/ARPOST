@@ -24,25 +24,12 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-    var operationMenu = UISegmentedControl(items: ["Text", "Paint", "Image"])
     var textButton = UIButton()
     var paintButton = UIButton()
     var imageButton = UIButton()
     
     
-    
     @IBOutlet var sceneView: ARSCNView!
-    
-    @objc func changeEditMode(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 1: // Paint
-            print("insert image")
-        case 2: // Image
-            print("insert image")
-        default: // Text
-            print("add sticky notes")
-        }
-    }
     
     @objc func didTapTextButton(sender: UIButton!) {
         print("add sticky notes")
