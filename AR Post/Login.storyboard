@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Login View Controller-->
+        <scene sceneID="jTf-WQ-cFi">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewControllerIdentifier" id="HNL-3p-fJR" customClass="LoginViewController" customModule="AR_Post" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="D3M-dD-bw1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login Page" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ido-T7-hgv">
+                                <rect key="frame" x="164.66666666666666" y="77" width="85" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wca-vH-cvh" customClass="FacebookLoginButton" customModule="AR_Post" customModuleProvider="target">
+                                <rect key="frame" x="167.66666666666666" y="351" width="79" height="34"/>
+                                <state key="normal" title="Facebook">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="didTapLoginButton:" destination="HNL-3p-fJR" eventType="touchDragInside" id="kFo-aV-8JE"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Ido-T7-hgv" firstAttribute="centerX" secondItem="D3M-dD-bw1" secondAttribute="centerX" id="5Qh-Yp-H5G"/>
+                            <constraint firstItem="Ido-T7-hgv" firstAttribute="centerY" secondItem="D3M-dD-bw1" secondAttribute="centerY" constant="-280.5" id="7ep-00-XcD"/>
+                            <constraint firstItem="wca-vH-cvh" firstAttribute="centerX" secondItem="D3M-dD-bw1" secondAttribute="centerX" id="TdH-Hf-fgz"/>
+                            <constraint firstItem="wca-vH-cvh" firstAttribute="centerY" secondItem="D3M-dD-bw1" secondAttribute="centerY" id="jJN-03-Flk"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="dyx-dx-W29"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qzL-gJ-tP2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-268" y="9.4452773613193415"/>
+        </scene>
+    </scenes>
+</document>
