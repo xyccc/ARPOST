@@ -12,7 +12,7 @@ import ARKit
 import FacebookLogin
 import FacebookCore
 
-class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate {
+class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureRecognizerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var isAdding = false
 //    var isPainting = false {
@@ -68,6 +68,33 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
     }
     @objc func didTapImageButton(sender: UIButton!) {
         print("insert image")
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        let actionSheet = UIAlertController()
+        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action:UIAlertAction) in
+            imagePickerController.sourceType = UIImagePickerControllerSourceType.camera
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Choose from Photo Library", style: .default, handler: { (action:UIAlertAction) in
+            imagePickerController.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+//        self.view.addSubview(actionSheet)
+        self.present(actionSheet, animated: true, completion: nil)
+        
+        
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            print("convert to image success")
+            let imageMaterial = SCNMaterial()
+            imageMaterial.isDoubleSided = false
+            imageMaterial.diffuse.contents = image
+            let cube: SCNGeometry? = SCNBox(width: 1.0, height: 1.0, length: 1, chamferRadius: 0)
+            let node = SCNNode(geometry: cube)
+            node.geometry?.materials = [imageMaterial]
+        }
+        
+        picker.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func didTapLogoutButton(_ sender: UIButton) {
@@ -164,10 +191,8 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
     }
     
     @objc func buttonTouchDown() {
-        if (isPainting) {
-            splitLine = true
-            buttonDown = true
-        }
+        splitLine = true
+        buttonDown = true
     }
     @objc func buttonTouchUp() {
         buttonDown = false
@@ -185,50 +210,51 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
      */
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        
-        if ( buttonDown ) {
-            
-            let pointer = getPointerPosition()
-            if ( pointer.valid ) {
+        if (isPainting) {
+            if ( buttonDown ) {
                 
-                if ( vertBrush.points.count == 0 || (vertBrush.points.last! - pointer.pos).length() > 0.001 ) {
+                let pointer = getPointerPosition()
+                if ( pointer.valid ) {
                     
-                    var radius : Float = 0.001
-                    
-                    
-                    if ( splitLine || vertBrush.points.count < 2 ) {
-                        lineRadius = 0.001
-                    } else {
+                    if ( vertBrush.points.count == 0 || (vertBrush.points.last! - pointer.pos).length() > 0.001 ) {
                         
-                        let i = vertBrush.points.count-1
-                        let p1 = vertBrush.points[i]
-                        let p2 = vertBrush.points[i-1]
+                        var radius : Float = 0.001
                         
-                        radius = 0.001 + min(0.015, 0.005 * pow( ( p2-p1 ).length() / 0.005, 2))
+                        
+                        if ( splitLine || vertBrush.points.count < 2 ) {
+                            lineRadius = 0.001
+                        } else {
+                            
+                            let i = vertBrush.points.count-1
+                            let p1 = vertBrush.points[i]
+                            let p2 = vertBrush.points[i-1]
+                            
+                            radius = 0.001 + min(0.015, 0.005 * pow( ( p2-p1 ).length() / 0.005, 2))
+                            
+                        }
+                        
+                        lineRadius = lineRadius - (lineRadius - radius)*0.075
+                        vertBrush.addPoint(pointer.pos, radius: lineRadius, splitLine:splitLine)
+                        
+                        if ( splitLine ) { splitLine = false }
                         
                     }
-                    
-                    lineRadius = lineRadius - (lineRadius - radius)*0.075
-                    vertBrush.addPoint(pointer.pos, radius: lineRadius, splitLine:splitLine)
-                    
-                    if ( splitLine ) { splitLine = false }
                     
                 }
                 
             }
             
+            
+            if ( frameIdx % 100 == 0 ) {
+                print(vertBrush.points.count, " points")
+            }
+            
+            frameIdx = frameIdx + 1
+            
+            //if ( frameIdx % 2 == 0 ) {
+            vertBrush.updateBuffers()
+            //}
         }
-        
-        if ( frameIdx % 100 == 0 ) {
-            print(vertBrush.points.count, " points")
-        }
-        
-        frameIdx = frameIdx + 1
-        
-        //if ( frameIdx % 2 == 0 ) {
-        vertBrush.updateBuffers()
-        //}
-        
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
