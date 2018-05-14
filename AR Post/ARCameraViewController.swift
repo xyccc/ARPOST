@@ -221,17 +221,11 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
                 if ( pointer.valid ) {
                     
                     if ( vertBrush.points.count == 0 || (vertBrush.points.last! - pointer.pos).length() > 0.001 ) {
-<<<<<<< HEAD
+
                         
                         var radius : Float = 0.001
                         
                         
-=======
-                        
-                        var radius : Float = 0.001
-                        
-                        
->>>>>>> bfc7801306f99bdd5027f1e9ba9564b02d8a048a
                         if ( splitLine || vertBrush.points.count < 2 ) {
                             lineRadius = 0.001
                         } else {
