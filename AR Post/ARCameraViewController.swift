@@ -58,6 +58,7 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
     @objc func didTapTextButton(sender: UIButton!) {
         print("add sticky notes")
     }
+    
     @objc func didTapPaintButton(sender: UIButton!) {
         isPainting = !isPainting
         if (isPainting) {
@@ -66,6 +67,7 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
             print("end painting")
         }
     }
+    
     @objc func didTapImageButton(sender: UIButton!) {
         print("insert image")
         let imagePickerController = UIImagePickerController()
@@ -81,21 +83,22 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
         }))
         
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-//        self.view.addSubview(actionSheet)
         self.present(actionSheet, animated: true, completion: nil)
-        
-        
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             print("convert to image success")
+            
+            let box = SCNBox(width: image.size.width / 40000, height: image.size.height / 40000, length: 0.001, chamferRadius: 0)
             let imageMaterial = SCNMaterial()
             imageMaterial.isDoubleSided = false
             imageMaterial.diffuse.contents = image
-            let cube: SCNGeometry? = SCNBox(width: 1.0, height: 1.0, length: 1, chamferRadius: 0)
-            let node = SCNNode(geometry: cube)
-            node.geometry?.materials = [imageMaterial]
+            box.materials = [imageMaterial]
+            let boxNode = SCNNode(geometry: box)
+            boxNode.rotation = SCNVector4(Double.pi / 2 , 1, 0, 0)
+            boxNode.position = getPointerPosition().pos
+            sceneView.scene.rootNode.addChildNode(boxNode)
         }
         
         picker.dismiss(animated: true, completion: nil)
