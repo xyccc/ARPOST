@@ -59,15 +59,6 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
         print("add sticky notes")
     }
     
-    @objc func didTapPaintButton(sender: UIButton!) {
-        isPainting = !isPainting
-        if (isPainting) {
-            print("start painting")
-        } else {
-            print("end painting")
-        }
-    }
-    
     @objc func didTapImageButton(sender: UIButton!) {
         print("insert image")
         let imagePickerController = UIImagePickerController()
@@ -138,19 +129,16 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
         paintButton.backgroundColor = UIColor.brown
         paintButton.tintColor = UIColor.white
         paintButton.setTitle("Paint", for: .normal)
-        paintButton.addTarget(self, action: #selector(didTapPaintButton), for: .touchUpInside)
+        let tap = UILongPressGestureRecognizer(target: self, action: #selector(tapHandler))
+        tap.minimumPressDuration = 0
+        tap.cancelsTouchesInView = false
+        paintButton.addGestureRecognizer(tap)
         
         imageButton.frame = CGRect(x: self.view.frame.size.width - 140, y: 550, width: 80, height: 50)
         imageButton.backgroundColor = UIColor.brown
         imageButton.tintColor = UIColor.white
         imageButton.setTitle("Image", for: .normal)
         imageButton.addTarget(self, action: #selector(didTapImageButton(sender:)), for: .touchUpInside)
-        
-        let tap = UILongPressGestureRecognizer(target: self, action: #selector(tapHandler))
-        tap.minimumPressDuration = 0
-        tap.cancelsTouchesInView = false
-        tap.delegate = self
-        self.sceneView.addGestureRecognizer(tap)
         
     }
     
@@ -217,40 +205,39 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
      */
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        if (isPainting) {
-            if ( buttonDown ) {
+        if ( buttonDown ) {
+            
+            let pointer = getPointerPosition()
+            if ( pointer.valid ) {
                 
-                let pointer = getPointerPosition()
-                if ( pointer.valid ) {
-                    
-                    if ( vertBrush.points.count == 0 || (vertBrush.points.last! - pointer.pos).length() > 0.001 ) {
+                if ( vertBrush.points.count == 0 || (vertBrush.points.last! - pointer.pos).length() > 0.001 ) {
 
+                    
+                    var radius : Float = 0.001
+                    
+                    
+                    if ( splitLine || vertBrush.points.count < 2 ) {
+                        lineRadius = 0.001
+                    } else {
                         
-                        var radius : Float = 0.001
+                        let i = vertBrush.points.count-1
+                        let p1 = vertBrush.points[i]
+                        let p2 = vertBrush.points[i-1]
                         
-                        
-                        if ( splitLine || vertBrush.points.count < 2 ) {
-                            lineRadius = 0.001
-                        } else {
-                            
-                            let i = vertBrush.points.count-1
-                            let p1 = vertBrush.points[i]
-                            let p2 = vertBrush.points[i-1]
-                            
-                            radius = 0.001 + min(0.015, 0.005 * pow( ( p2-p1 ).length() / 0.005, 2))
-                            
-                        }
-                        
-                        lineRadius = lineRadius - (lineRadius - radius)*0.075
-                        vertBrush.addPoint(pointer.pos, radius: lineRadius, splitLine:splitLine)
-                        
-                        if ( splitLine ) { splitLine = false }
+                        radius = 0.001 + min(0.015, 0.005 * pow( ( p2-p1 ).length() / 0.005, 2))
                         
                     }
+                    
+                    lineRadius = lineRadius - (lineRadius - radius)*0.075
+                    vertBrush.addPoint(pointer.pos, radius: lineRadius, splitLine:splitLine)
+                    
+                    if ( splitLine ) { splitLine = false }
                     
                 }
                 
             }
+        }
+                
             
             
             if ( frameIdx % 100 == 0 ) {
@@ -262,7 +249,6 @@ class ARCameraViewController: UIViewController, ARSCNViewDelegate, UIGestureReco
             //if ( frameIdx % 2 == 0 ) {
             vertBrush.updateBuffers()
             //}
-        }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
